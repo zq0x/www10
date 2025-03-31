@@ -553,6 +553,10 @@ def gr_load_check(selected_model_id, selected_model_architectures, selected_mode
     
     logging.info(f' **************** does requested model path match downloaded?')
     model_path = selected_model_id
+    
+    if selected_model_pipeline_tag == "automatic-speech-recognition":
+        return f'automatic-speech-recognition found!', gr.update(visible=True), gr.update(visible=True)
+    
     if req_model_path in models_found:
         print(f' **************** FOUND MODELS ALREADY!!! {selected_model_id} ist in {models_found}')
         model_path = req_model_path
@@ -1640,24 +1644,22 @@ def create_app():
 
     
 
-                        
-        with gr.Row(visible=True) as row_audio:
-            gr.Markdown("## Faster-Whisper Audio Transcription")
-            gr.Markdown("Upload an audio file to transcribe it using a faster-whisper model.")
-            with gr.Column(scale=2):
-                audio_input = gr.Audio(label="Upload Audio", type="filepath")
-                
+        with gr.Accordion(("Automatic Speech Recognition"), open=False) as acc_automatic_speech_recognition:
+            with gr.Row(visible=True) as row_audio:
+                with gr.Column(scale=2):
+                    audio_input = gr.Audio(label="Upload Audio", type="filepath")
 
-            with gr.Column(scale=1):
-                text_output = gr.Textbox(label="Transcription", lines=10)
-            
-            transcribe_btn = gr.Button("Transcribe")
-            transcribe_btn.click(
-                transcribe_audio,
-                inputs=audio_input,
-                outputs=text_output
-            )
-        
+                with gr.Column(scale=2):
+                    text_output = gr.Textbox(label="Transcription", lines=10)
+                    
+                with gr.Column(scale=1):
+                    transcribe_btn = gr.Button("Transcribe")
+                    transcribe_btn.click(
+                        transcribe_audio,
+                        inputs=audio_input,
+                        outputs=text_output
+                    )
+                
                 
 
             
@@ -1761,11 +1763,11 @@ def create_app():
             None,
             output
         ).then(
-            lambda: gr.update(visible=False, open=False), 
+            lambda: gr.update(visible=True, open=False), # hier
             None, 
             vllm_load_settings    
         ).then(
-            lambda: gr.update(visible=False), 
+            lambda: gr.update(visible=True), # hier
             None, 
             row_select_vllm   
         ).then(
@@ -1777,7 +1779,7 @@ def create_app():
             None, 
             vllm_prompt_settings
         ).then(
-            lambda: gr.update(visible=False), 
+            lambda: gr.update(visible=True), # hier
             None, 
             btn_load
         ).then(
@@ -1803,17 +1805,17 @@ def create_app():
             None, 
             vllm_prompt_settings
         ).then(
-            lambda: gr.update(visible=False), 
-            None, 
-            btn_create
-        ).then(
-            lambda: gr.update(visible=False), 
-            None, 
-            btn_create_close
-        ).then(
             lambda: gr.update(visible=True), 
             None, 
             row_prompt
+        ).then(
+            lambda: gr.update(visible=True), # hier
+            None, 
+            btn_create
+        ).then(
+            lambda: gr.update(visible=True), # hier
+            None, 
+            btn_create_close
         )
 
 
