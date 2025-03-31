@@ -769,7 +769,7 @@ async def docker_rest(request: Request):
                     print(f' !!!!! create found "xoo4foo/" !')
                     print(f' !!!!! create found req_container_name: {req_container_name} !')
 
-                    client.containers.run(
+                    res_container = client.containers.run(
                         image=req_data["req_image"],
                         name=req_container_name,
                         runtime=req_data["req_runtime"],
@@ -814,40 +814,11 @@ async def docker_rest(request: Request):
                             time.sleep(5)
                         print(f'!!!!! check if container running 5 !! FOUND NEW CONTAINER !! SUCCESS')
                         
+                        print(f' * ! * ! * getting container_id nuh uh slep :3  ...')
+                        container_id = res_container.id
+                        print(f' * ! * ! * getting container_id container_id: {container_id} ...')
+                        return JSONResponse({"result_status": 200, "result_data": f'Created vLLM container with container_id {container_id}'})
                         
-                        
-                        
-                        print(f' * ! * ! * sleeping for 60 sec ...')
-                        for i in range(0,60):
-                            print(f' * ! * ! * zzz ZZZ zzz {i} ... * ! * ! *')
-                            time.sleep(1)
-                        
-                        print(f' * ! * ! * trying to load ....  0 ')
-                        VLLM_URL = f'http://{req_container_name}:{req_data["req_port"]}/vllm'
-                        print(f' * ! * ! * trying to load ....  1 VLLM_URL {VLLM_URL}')
-                        try:
-                            response = requests.post(VLLM_URL, json={
-                                "req_type":"load",
-                                "max_model_len":int(req_data["req_max_model_len"]),
-                                "tensor_parallel_size":int(req_data["req_tensor_parallel_size"]),
-                                "gpu_memory_utilization":float(req_data["req_gpu_memory_utilization"]),
-                                "model":str(req_data["model_id"])
-                            })
-                            print(f' * ! * ! * trying to load ....  3 response {response}')
-                            if response.status_code == 200:
-                                print(f' * ! * ! * trying to load ....  4 status_code: {response.status_code}')
-                                
-                                response_json = response.json()
-                                print(f' * ! * ! * trying to load ....  5 response_json: {response_json}')
-                                print(f' * ! * ! * trying to load ....  6 response_json["result_data"]: {response_json["result_data"]}')
-                                return JSONResponse({"result_status": 200, "result_data": f'{response_json["result_data"]}'})
-                            else:
-                                print(f' * ! * ! * trying to load .... 7 ERRRRR')
-                                return JSONResponse({"result_status": 500, "result_data": f'ERRRRRR'})
-                        
-                        except Exception as e:
-                                print(f' * ! * ! * trying to load .... 8 ERRRRR')
-                                return JSONResponse({"result_status": 500, "result_data": f'ERRRRRR 8'})
 
                     except Exception as e:
                         print(f'!!!!! check if container running 9 !! DID NUU FIND :(( error e: {e}') 
